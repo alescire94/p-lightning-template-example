@@ -1,7 +1,9 @@
 from typing import Any
 
+import hydra
 import pytorch_lightning as pl
 import torch
+from torch.optim import Optimizer
 
 
 class BasePLModule(pl.LightningModule):
@@ -9,6 +11,7 @@ class BasePLModule(pl.LightningModule):
     def __init__(self, conf, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters(conf)
+        self.conf = conf
 
     def forward(self, **kwargs) -> dict:
         """
@@ -53,4 +56,6 @@ class BasePLModule(pl.LightningModule):
             - Tuple of dictionaries as described, with an optional 'frequency' key.
             - None - Fit will run without any optimizer.
         """
-        raise NotImplementedError
+        pass
+        #optimizer: Optimizer = hydra.utils.instantiate(self.conf.train.optimizer)
+        #return optimizer

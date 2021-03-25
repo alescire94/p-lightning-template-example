@@ -1,10 +1,15 @@
 from typing import Any, Union, List, Optional
 
+import hydra
 from omegaconf import DictConfig
 
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset, IterableDataset
 import pytorch_lightning as pl
+from datasets import load_dataset
+import os
+
+from src.data.CoNLLDataset import CoNLLDataset
 
 
 class BasePLDataModule(pl.LightningDataModule):
@@ -52,21 +57,33 @@ class BasePLDataModule(pl.LightningDataModule):
     def __init__(self, conf: DictConfig):
         super().__init__()
         self.conf = conf
+        self.splits = ["train", "validation", "test"]
 
+    # download dataset and stores it in train, val and test split in csv format.
     def prepare_data(self, *args, **kwargs):
-        raise NotImplementedError
+        dataset = load_dataset(self.conf.data.dataset_name)
+        for split in self.splits:
+            split_path = hydra.utils.to_absolute_path(self.conf.data[f"{split}_path"])
+            dataset[split].to_csv(split_path)
 
     def setup(self, stage: Optional[str] = None):
-        raise NotImplementedError
+        pass
+        #raise NotImplementedError
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
-        raise NotImplementedError
+        train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
+        dataset = CoNLLDataset(train_path)
+        return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def val_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        raise NotImplementedError
+        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
+        dataset = CoNLLDataset(val_path)
+        return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def test_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        raise NotImplementedError
+        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
+        dataset = CoNLLDataset(val_path)
+        return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def transfer_batch_to_device(self, batch: Any, device: torch.device) -> Any:
-        raise NotImplementedError
+        pass

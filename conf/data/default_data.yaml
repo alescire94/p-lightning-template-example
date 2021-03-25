@@ -1,8 +1,11 @@
 # @package _group_
 
-train_path: 'data/train.tsv'
-validation_path: 'data/validation.tsv'
-test_path: 'data/test.tsv'
+#specify hugging face dataset name
+dataset_name: 'conll2003'
+
+train_path: 'data/conll2003_train.csv'
+validation_path: 'data/conll2003_val.csv'
+test_path: 'data/conll2003_test.csv'
 
 batch_size: 16
 num_workers: 1
