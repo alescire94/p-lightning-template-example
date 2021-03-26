@@ -1,3 +1,9 @@
 # @package _group_
 
 model_feature: 'fantastic_model_feature'
+lstm:
+  bidirectional: False
+  input_size: 300
+  hidden_size: 300
+  dropout: 0.2
+  num_layers: 300

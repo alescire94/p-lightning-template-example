@@ -11,10 +11,22 @@ class BasePLModule(pl.LightningModule):
         self.save_hyperparameters(conf)
         self.conf = conf
         self.word_embeddings = nn.Embedding(50_000, 300, padding_idx=0)
+
+        lstm_param = self.conf.model.lstm
         self.lstm = nn.LSTM(
-            input_size=300, hidden_size=300, bidirectional=False, batch_first=True, num_layers=300, dropout=0.2
+            input_size=lstm_param.input_size,
+            hidden_size=lstm_param.hidden_size,
+            bidirectional=lstm_param.bidirectional,
+            batch_first=True,
+            num_layers=lstm_param.num_layers,
+            dropout=lstm_param.dropout,
         )
-        self.linear = nn.Linear(300, 11)
+        linear_input_size = (
+            self.conf.model.lstm.input_size * 2
+            if self.conf.model.lstm.bidirectional
+            else self.conf.model.lstm.input_size
+        )
+        self.linear = nn.Linear(linear_input_size, 11)
         self.loss = nn.CrossEntropyLoss(ignore_index=0)
 
     def forward(self, feature) -> dict:
