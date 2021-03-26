@@ -1,12 +1,18 @@
+from typing import List
+
 from torch.utils.data.dataset import Dataset, T_co
-import csv
 import re
+
 
 
 class CoNLLDataset(Dataset):
 
     def __init__(self, dataset_path):
+        self.words: List[List[str]] = []
+        self.pos: List[List[str]] = []
+        self.ner_labels: List[List[str]] = []
         self.dataset = self.parse_dataset(dataset_path)
+        self.vocab
         print()
 
     def __getitem__(self, index) -> T_co:
@@ -18,11 +24,32 @@ class CoNLLDataset(Dataset):
     def parse_dataset(self, dataset_path):
         dataset = []
         with open(dataset_path) as f:
+            next(f)
+            next(f)
+            raw_text = f.read()
+            sentences: List[str] = raw_text.split("\n\n")
+            sentences: List[List[str]] = [sentence.split("\n") for sentence in sentences][:-1]
+            # sentence:List[List[List[str]]] = [row.split(" ") for sentence in sentences for row in sentence]
+
+            for sent in sentences:
+                words = []
+                pos_tags = []
+                ner_labels = []
+                for row in sent:
+                    try:
+                        (word, pos_tag, _, ner_label) = row.split(" ")
+                    except:
+                        pass
+                    words.append(word)
+                    pos_tags.append(pos_tag)
+                    ner_labels.append(ner_label)
+                self.words.append(words)
+                self.pos.append(pos_tags)
+                self.ner_labels.append(ner_labels)
+            print()
             # creating a csv reader object
-            csvreader = csv.reader(f)
 
             # extracting field names through first row
-            next(csvreader)
 
             # extracting each data row one by one
             for i, row in enumerate(csvreader):
@@ -49,7 +76,7 @@ class CoNLLDataset(Dataset):
         return re.sub("\\s+", " ", literal).strip()
 
     def remove_brackets(self, literal):
-        return literal.replace("[", "").replace("]","")
+        return literal.replace("[", "").replace("]", "")
 
     def parse_list(self, list_literal):
         return [int(label) for label in list_literal.split(" ")]

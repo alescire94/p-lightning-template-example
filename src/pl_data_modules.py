@@ -61,10 +61,11 @@ class BasePLDataModule(pl.LightningDataModule):
 
     # download dataset and stores it in train, val and test split in csv format.
     def prepare_data(self, *args, **kwargs):
-        dataset = load_dataset(self.conf.data.dataset_name)
-        for split in self.splits:
-            split_path = hydra.utils.to_absolute_path(self.conf.data[f"{split}_path"])
-            dataset[split].to_csv(split_path)
+        pass
+        # dataset = load_dataset(self.conf.data.dataset_name)
+        # for split in self.splits:
+        #     split_path = hydra.utils.to_absolute_path(self.conf.data[f"{split}_path"])
+        #     dataset[split].to_csv(split_path)
 
     def setup(self, stage: Optional[str] = None):
         pass
