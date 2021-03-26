@@ -1,5 +1,6 @@
 import omegaconf
 import hydra
+import torch
 
 import pytorch_lightning as pl
 from pytorch_lightning import Trainer
@@ -31,8 +32,9 @@ def train(conf: omegaconf.DictConfig) -> None:
         model_checkpoint_callback: ModelCheckpoint = hydra.utils.instantiate(conf.train.early_stopping_callback)
         callbacks_store.append(model_checkpoint_callback)
 
+    gpus = conf.train.gpus if torch.cuda.is_available() else 0
     # trainer
-    trainer: Trainer = hydra.utils.instantiate(conf.train.pl_trainer, callbacks=callbacks_store)
+    trainer: Trainer = hydra.utils.instantiate(conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus)
 
     # module fit
     trainer.fit(pl_module, datamodule=pl_data_module)
@@ -41,10 +43,10 @@ def train(conf: omegaconf.DictConfig) -> None:
     trainer.test(pl_module, datamodule=pl_data_module)
 
 
-@hydra.main(config_path='../conf', config_name='root')
+@hydra.main(config_path="../conf", config_name="root")
 def main(conf: omegaconf.DictConfig):
     train(conf)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

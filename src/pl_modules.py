@@ -7,7 +7,6 @@ from torch.optim import Optimizer
 
 
 class BasePLModule(pl.LightningModule):
-
     def __init__(self, conf, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters(conf)
@@ -28,12 +27,12 @@ class BasePLModule(pl.LightningModule):
 
     def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
         forward_output = self.forward(**batch)
-        self.log('loss', forward_output['loss'])
-        return forward_output['loss']
+        self.log("loss", forward_output["loss"])
+        return forward_output["loss"]
 
     def validation_step(self, batch: dict, batch_idx: int) -> None:
         forward_output = self.forward(**batch)
-        self.log('val_loss', forward_output['loss'])
+        self.log("val_loss", forward_output["loss"])
 
     def test_step(self, batch: dict, batch_idx: int) -> Any:
         raise NotImplementedError
@@ -57,5 +56,5 @@ class BasePLModule(pl.LightningModule):
             - None - Fit will run without any optimizer.
         """
         pass
-        #optimizer: Optimizer = hydra.utils.instantiate(self.conf.train.optimizer)
-        #return optimizer
+        # optimizer: Optimizer = hydra.utils.instantiate(self.conf.train.optimizer)
+        # return optimizer

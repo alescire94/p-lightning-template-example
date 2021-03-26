@@ -6,7 +6,6 @@ from omegaconf import DictConfig
 import torch
 from torch.utils.data import DataLoader, Dataset, IterableDataset
 import pytorch_lightning as pl
-from datasets import load_dataset
 import os
 
 from src.data.CoNLLDataset import CoNLLDataset
@@ -69,7 +68,7 @@ class BasePLDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         pass
-        #raise NotImplementedError
+        # raise NotImplementedError
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
         train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
