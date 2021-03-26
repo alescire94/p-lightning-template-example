@@ -10,7 +10,6 @@ class Vocab:
         self.add_token(self.pad_token)
         self._special_tokens = [pad_token]
         self.pad_id: int = self.token_to_id(pad_token)
-
         if not is_label:
             self.add_token(self.unk_token)
             self.unk_id = self.token_to_id(unk_token)

@@ -1,18 +1,19 @@
 from typing import Any
 
-import hydra
 import pytorch_lightning as pl
 import torch
-from torch.optim import Optimizer
 from torch import nn
+
 
 class BasePLModule(pl.LightningModule):
     def __init__(self, conf, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters(conf)
         self.conf = conf
-        self.word_embeddings = nn.Embedding(10_000, 300, padding_idx=0)
-        self.lstm = nn.LSTM(300, 300, True, True, 300, dropout=0.2)
+        self.word_embeddings = nn.Embedding(50_000, 300, padding_idx=0)
+        self.lstm = nn.LSTM(
+            input_size=300, hidden_size=300, bidirectional=False, batch_first=True, num_layers=300, dropout=0.2
+        )
         self.linear = nn.Linear(300, 11)
         self.loss = nn.CrossEntropyLoss(ignore_index=0)
 
@@ -26,35 +27,30 @@ class BasePLModule(pl.LightningModule):
             output_dict: forward output containing the predictions (output logits ecc...) and the loss if any.
 
         """
-        print(feature)
-        exit(0)
         emb = self.word_embeddings(feature)
         out_lstm, _ = self.lstm(emb)
         return self.linear(out_lstm)
 
-
     def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
-        words = batch['words']
-        label = batch['labels']
-        forward_output = self.forward(words)
-        loss = self.loss(forward_output, label)
+        loss = self._shared_step(batch, batch_idx)
         self.log("train_loss", loss)
         return loss
 
     def validation_step(self, batch: dict, batch_idx: int) -> None:
-        words = batch['words']
-        label = batch['labels']
-        forward_output = self.forward(words)
-        loss = self.loss(forward_output, label)
+        loss = self._shared_step(batch, batch_idx)
         self.log("dev_loss", loss)
         return loss
 
     def test_step(self, batch: dict, batch_idx: int) -> Any:
-        words = batch['words']
-        label = batch['labels']
-        forward_output = self.forward(words)
-        loss = self.loss(forward_output, label)
+        loss = self._shared_step(batch, batch_idx)
         self.log("test_loss", loss)
+        return loss
+
+    def _shared_step(self, batch: dict, batch_idx: int):
+        words = batch["words"]
+        label = batch["labels"]
+        forward_output = self.forward(words)
+        loss = self.loss(forward_output.view(-1, forward_output.shape[-1]), label.view(-1))
         return loss
 
     def configure_optimizers(self):
@@ -75,6 +71,6 @@ class BasePLModule(pl.LightningModule):
             - Tuple of dictionaries as described, with an optional 'frequency' key.
             - None - Fit will run without any optimizer.
         """
-        pass
-        # optimizer: Optimizer = hydra.utils.instantiate(self.conf.train.optimizer)
-        # return optimizer
+        optimizer = torch.optim.Adam(self.parameters())
+        # optimizer: torch.optim.Adam = hydra.utils.instantiate(self.conf.train.optimizer, params=self.parameters())
+        return optimizer

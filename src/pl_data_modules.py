@@ -1,12 +1,10 @@
-from typing import Any, Union, List, Optional
+from typing import Any, List, Optional, Union
 
 import hydra
-from omegaconf import DictConfig
-
-import torch
-from torch.utils.data import DataLoader, Dataset, IterableDataset
 import pytorch_lightning as pl
-import os
+import torch
+from omegaconf import DictConfig
+from torch.utils.data import DataLoader
 
 from src.data.CoNLLDataset import CoNLLDataset
 
@@ -74,17 +72,23 @@ class BasePLDataModule(pl.LightningDataModule):
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
         train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
         dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
-        return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
+        return DataLoader(
+            dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=True
+        )
 
     def val_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
         val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
         dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
-        return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
+        return DataLoader(
+            dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=False
+        )
 
     def test_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
         test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
         dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
-        return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
+        return DataLoader(
+            dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=False
+        )
 
     def transfer_batch_to_device(self, batch: Any, device: torch.device) -> Any:
         pass

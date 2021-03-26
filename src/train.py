@@ -1,8 +1,7 @@
-import omegaconf
 import hydra
-import torch
-
+import omegaconf
 import pytorch_lightning as pl
+import torch
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 
@@ -35,7 +34,9 @@ def train(conf: omegaconf.DictConfig) -> None:
     gpus = conf.train.gpus if torch.cuda.is_available() else 0
 
     # trainer
-    trainer: Trainer = hydra.utils.instantiate(conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus)
+    trainer: Trainer = hydra.utils.instantiate(
+        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=True
+    )
 
     # module fit
     trainer.fit(pl_module, datamodule=pl_data_module)

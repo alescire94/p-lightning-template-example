@@ -1,7 +1,8 @@
+import re
 from typing import List
 
+import torch
 from torch.utils.data.dataset import Dataset, T_co
-import re
 
 from src.data.Vocab import Vocab
 
@@ -27,7 +28,12 @@ class CoNLLDataset(Dataset):
             encoded_words = self.encode_tokens(self.words[id_sentence], self.vocab_words)
             encoded_pos = self.encode_tokens(self.pos[id_sentence], self.vocab_pos)
             encoded_ner_labels = self.encode_tokens(self.ner_labels[id_sentence], self.vocab_label_ner)
-            sample = {"id_sentence": id_sentence, "words": encoded_words, "pos": encoded_pos, "labels": encoded_ner_labels}
+            sample = {
+                "id_sentence": id_sentence,
+                "words": encoded_words,
+                "pos": encoded_pos,
+                "labels": encoded_ner_labels,
+            }
             result.append(sample)
         return result
 
@@ -48,7 +54,7 @@ class CoNLLDataset(Dataset):
         """
         build a vocabulary for the roles label vector
         """
-        vocab = Vocab(pad_token=pad_token, unk_token=unk_token)
+        vocab = Vocab(pad_token=pad_token, unk_token=unk_token, is_label=is_label)
         for sentence_id in range(self.len_dataset):
             for token in token_list[sentence_id]:
                 if token != pad_token:
@@ -56,7 +62,7 @@ class CoNLLDataset(Dataset):
         vocab.drop_frequency(freq_to_drop=freq_to_drop)
         return vocab
 
-    def encode_tokens(self, sentence: List[str], vocab: Vocab) -> List[int]:
+    def encode_tokens(self, sentence: List[str], vocab: Vocab) -> torch.LongTensor:
         result: List[int] = [
             vocab.token_to_id(token) if vocab.is_present(token) else vocab.unk_id for token in sentence
         ]
@@ -64,7 +70,7 @@ class CoNLLDataset(Dataset):
         if len_sentence < self.padding_size:
             padding: List[int] = [vocab.pad_id] * (self.padding_size - len_sentence)
             result.extend(padding)
-        return result
+        return torch.LongTensor(result)
 
     def parse_dataset(self, dataset_path):
         dataset = []
