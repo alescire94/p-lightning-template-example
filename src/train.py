@@ -33,6 +33,7 @@ def train(conf: omegaconf.DictConfig) -> None:
         callbacks_store.append(model_checkpoint_callback)
 
     gpus = conf.train.gpus if torch.cuda.is_available() else 0
+
     # trainer
     trainer: Trainer = hydra.utils.instantiate(conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus)
 

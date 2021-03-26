@@ -81,8 +81,8 @@ class BasePLDataModule(pl.LightningDataModule):
         return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def test_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
-        dataset = CoNLLDataset(val_path)
+        test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
+        dataset = CoNLLDataset(test_path)
         return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def transfer_batch_to_device(self, batch: Any, device: torch.device) -> Any:

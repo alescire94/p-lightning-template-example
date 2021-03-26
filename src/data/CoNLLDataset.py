@@ -25,7 +25,7 @@ class CoNLLDataset(Dataset):
             encoded_words = self.encode_tokens(self.words[id_sentence], self.vocab_words)
             encoded_pos = self.encode_tokens(self.pos[id_sentence], self.vocab_pos)
             encoded_ner_labels = self.encode_tokens(self.ner_labels[id_sentence], self.vocab_label_ner)
-            sample = {"words": encoded_words, "pos": encoded_pos, "labels": encoded_ner_labels}
+            sample = {"id_sentence": id_sentence, "words": encoded_words, "pos": encoded_pos, "labels": encoded_ner_labels}
             result.append(sample)
         return result
 
