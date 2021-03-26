@@ -4,15 +4,19 @@ import hydra
 import pytorch_lightning as pl
 import torch
 from torch.optim import Optimizer
-
+from torch import nn
 
 class BasePLModule(pl.LightningModule):
     def __init__(self, conf, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters(conf)
         self.conf = conf
+        self.word_embeddings = nn.Embedding(10_000, 300, padding_idx=0)
+        self.lstm = nn.LSTM(300, 300, True, True, 300, dropout=0.2)
+        self.linear = nn.Linear(300, 11)
+        self.loss = nn.CrossEntropyLoss(ignore_index=0)
 
-    def forward(self, **kwargs) -> dict:
+    def forward(self, feature) -> dict:
         """
         Method for the forward pass.
         'training_step', 'validation_step' and 'test_step' should call
@@ -22,20 +26,36 @@ class BasePLModule(pl.LightningModule):
             output_dict: forward output containing the predictions (output logits ecc...) and the loss if any.
 
         """
-        output_dict = {}
-        return output_dict
+        print(feature)
+        exit(0)
+        emb = self.word_embeddings(feature)
+        out_lstm, _ = self.lstm(emb)
+        return self.linear(out_lstm)
+
 
     def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
-        forward_output = self.forward(**batch)
-        self.log("loss", forward_output["loss"])
-        return forward_output["loss"]
+        words = batch['words']
+        label = batch['labels']
+        forward_output = self.forward(words)
+        loss = self.loss(forward_output, label)
+        self.log("train_loss", loss)
+        return loss
 
     def validation_step(self, batch: dict, batch_idx: int) -> None:
-        forward_output = self.forward(**batch)
-        self.log("val_loss", forward_output["loss"])
+        words = batch['words']
+        label = batch['labels']
+        forward_output = self.forward(words)
+        loss = self.loss(forward_output, label)
+        self.log("dev_loss", loss)
+        return loss
 
     def test_step(self, batch: dict, batch_idx: int) -> Any:
-        raise NotImplementedError
+        words = batch['words']
+        label = batch['labels']
+        forward_output = self.forward(words)
+        loss = self.loss(forward_output, label)
+        self.log("test_loss", loss)
+        return loss
 
     def configure_optimizers(self):
         """

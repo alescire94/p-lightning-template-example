@@ -18,6 +18,8 @@ class CoNLLDataset(Dataset):
         self.vocab_label_ner: Vocab = self.build_vocab(self.ner_labels, is_label=True)
         self.padding_size = 150
         self.dataset = self.build_dataset()
+        print("LEN VOCAB WORDS", len(self.vocab_words))
+        print("LEN VOCAB vocab", len(self.vocab_label_ner))
 
     def build_dataset(self) -> List[dict]:
         result = []

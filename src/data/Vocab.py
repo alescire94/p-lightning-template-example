@@ -19,6 +19,9 @@ class Vocab:
     def is_present(self, token: str) -> bool:
         return token in self._token_to_id
 
+    def __len__(self):
+        return len(self._id_to_token)
+
     def add_token(self, token) -> int:
         if token not in self._token_to_id:
             id = len(self._token_to_id)
