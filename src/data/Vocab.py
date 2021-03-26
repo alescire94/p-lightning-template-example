@@ -2,7 +2,7 @@ from typing import Dict, List
 
 
 class Vocab:
-    def __init__(self, unk_token: str = '<unk>', pad_token: str = '<pad>', is_label: bool=False):
+    def __init__(self, unk_token: str = "<unk>", pad_token: str = "<pad>", is_label: bool = False):
         self._token_to_id: Dict[str, int] = {}
         self._id_to_token: Dict[int, List[str, int]] = {}  # id: (words, occ)
         self.unk_token: str = unk_token
@@ -36,4 +36,6 @@ class Vocab:
         return self._token_to_id[token]
 
     def drop_frequency(self, freq_to_drop: int):
-        self._id_to_token = {k: v for k, v in self._id_to_token.items() if v[1] > freq_to_drop or v in self._special_tokens}
+        self._id_to_token = {
+            k: v for k, v in self._id_to_token.items() if v[1] > freq_to_drop or v in self._special_tokens
+        }

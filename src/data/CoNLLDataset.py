@@ -5,8 +5,8 @@ import re
 
 from src.data.Vocab import Vocab
 
-class CoNLLDataset(Dataset):
 
+class CoNLLDataset(Dataset):
     def __init__(self, dataset_path):
         self.words: List[List[str]] = []
         self.pos: List[List[str]] = []
@@ -25,7 +25,7 @@ class CoNLLDataset(Dataset):
             encoded_words = self.encode_tokens(self.words[id_sentence], self.vocab_words)
             encoded_pos = self.encode_tokens(self.pos[id_sentence], self.vocab_pos)
             encoded_ner_labels = self.encode_tokens(self.ner_labels[id_sentence], self.vocab_label_ner)
-            sample = {'words': encoded_words, 'pos': encoded_pos, 'labels': encoded_ner_labels}
+            sample = {"words": encoded_words, "pos": encoded_pos, "labels": encoded_ner_labels}
             result.append(sample)
         return result
 
@@ -35,10 +35,17 @@ class CoNLLDataset(Dataset):
     def __len__(self):
         return self.len_dataset
 
-    def build_vocab(self, token_list: List[List[str]], pad_token: str = '<pad>', unk_token: str = '<unk>', freq_to_drop: int = 0, is_label:bool=False) -> Vocab:
-        '''
+    def build_vocab(
+        self,
+        token_list: List[List[str]],
+        pad_token: str = "<pad>",
+        unk_token: str = "<unk>",
+        freq_to_drop: int = 0,
+        is_label: bool = False,
+    ) -> Vocab:
+        """
         build a vocabulary for the roles label vector
-        '''
+        """
         vocab = Vocab(pad_token=pad_token, unk_token=unk_token)
         for sentence_id in range(self.len_dataset):
             for token in token_list[sentence_id]:
@@ -48,7 +55,9 @@ class CoNLLDataset(Dataset):
         return vocab
 
     def encode_tokens(self, sentence: List[str], vocab: Vocab) -> List[int]:
-        result: List[int] = [vocab.token_to_id(token) if vocab.is_present(token) else vocab.unk_id for token in sentence]
+        result: List[int] = [
+            vocab.token_to_id(token) if vocab.is_present(token) else vocab.unk_id for token in sentence
+        ]
         len_sentence = len(sentence)
         if len_sentence < self.padding_size:
             padding: List[int] = [vocab.pad_id] * (self.padding_size - len_sentence)
