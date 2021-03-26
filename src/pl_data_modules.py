@@ -67,22 +67,23 @@ class BasePLDataModule(pl.LightningDataModule):
         #     dataset[split].to_csv(split_path)
 
     def setup(self, stage: Optional[str] = None):
-        pass
+        # TODO os.system("wget data/ https://data.deepai.org/conll2003.zip && unzip data/conll2003.zip")
         # raise NotImplementedError
+        pass
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
         train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
-        dataset = CoNLLDataset(train_path)
+        dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
         return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def val_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
         val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
-        dataset = CoNLLDataset(val_path)
+        dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
         return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def test_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
         test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
-        dataset = CoNLLDataset(test_path)
+        dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
         return DataLoader(dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size)
 
     def transfer_batch_to_device(self, batch: Any, device: torch.device) -> Any:

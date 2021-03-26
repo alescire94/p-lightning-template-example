@@ -7,7 +7,7 @@ from src.data.Vocab import Vocab
 
 
 class CoNLLDataset(Dataset):
-    def __init__(self, dataset_path):
+    def __init__(self, padding_size: int, dataset_path: str):
         self.words: List[List[str]] = []
         self.pos: List[List[str]] = []
         self.ner_labels: List[List[str]] = []
@@ -16,7 +16,7 @@ class CoNLLDataset(Dataset):
         self.vocab_words: Vocab = self.build_vocab(self.words)
         self.vocab_pos: Vocab = self.build_vocab(self.pos)
         self.vocab_label_ner: Vocab = self.build_vocab(self.ner_labels, is_label=True)
-        self.padding_size = 150
+        self.padding_size = padding_size
         self.dataset = self.build_dataset()
         print("LEN VOCAB WORDS", len(self.vocab_words))
         print("LEN VOCAB vocab", len(self.vocab_label_ner))
