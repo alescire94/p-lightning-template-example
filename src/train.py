@@ -17,8 +17,10 @@ def train(conf: omegaconf.DictConfig) -> None:
     # data module declaration
     pl_data_module = BasePLDataModule(conf)
 
+    dataset_train =  pl_data_module.train_dataset
+
     # main module declaration
-    pl_module = BasePLModule(conf, pl_data_module.train_dataset)
+    pl_module = BasePLModule(conf, dataset_train)
 
     # callbacks declaration
     callbacks_store = []

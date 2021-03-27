@@ -55,12 +55,8 @@ class BasePLDataModule(pl.LightningDataModule):
         super().__init__()
         self.conf = conf
         self.prepare_data()
-        train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
-        self.train_dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
-        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
-        self.val_dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
-        test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
-        self.test_dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
+        self.setup()
+
 
     # download dataset and stores it in train, val and test split in csv format.
     def prepare_data(self, *args, **kwargs):
@@ -69,8 +65,13 @@ class BasePLDataModule(pl.LightningDataModule):
             os.system("wget https://data.deepai.org/conll2003.zip -P {} && unzip {}/conll2003.zip -d {} && rm {}/conll2003.zip".format(abs_path, abs_path, abs_path, abs_path))
 
     def setup(self, stage: Optional[str] = None):
-        # raise NotImplementedError
-        pass
+        print("SONO DENTRO SETUP")
+        train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
+        self.train_dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
+        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
+        self.val_dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
+        test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
+        self.test_dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
         return DataLoader(self.train_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=True)
