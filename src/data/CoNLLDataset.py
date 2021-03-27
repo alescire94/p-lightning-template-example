@@ -24,7 +24,6 @@ class CoNLLDataset(Dataset):
         self.vocab_pos_size = len(self.vocab_pos)
         self.vocab_ner_labels_size = len(self.vocab_label_ner)
 
-
     def build_dataset(self) -> List[dict]:
         result = []
         for id_sentence in range(self.len_dataset):
@@ -65,9 +64,7 @@ class CoNLLDataset(Dataset):
         return vocab
 
     def encode_tokens(self, sentence: List[str], vocab: Vocab) -> torch.LongTensor:
-        result: List[int] = [
-            vocab.token_to_id(token) if vocab.is_present(token) else vocab.unk_id for token in sentence
-        ]
+        result: List[int] = [vocab.token_to_id(token) if token in vocab else vocab.unk_id for token in sentence]
         len_sentence = len(sentence)
         if len_sentence < self.padding_size:
             padding: List[int] = [vocab.pad_id] * (self.padding_size - len_sentence)
@@ -75,7 +72,6 @@ class CoNLLDataset(Dataset):
         return torch.LongTensor(result)
 
     def parse_dataset(self, dataset_path):
-        dataset = []
         with open(dataset_path) as f:
             next(f)
             next(f)

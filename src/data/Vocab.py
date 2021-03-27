@@ -15,7 +15,7 @@ class Vocab:
             self.unk_id = self.token_to_id(unk_token)
             self._special_tokens.append(self.unk_token)
 
-    def is_present(self, token: str) -> bool:
+    def __contains__(self, token: str) -> bool:
         return token in self._token_to_id
 
     def __len__(self):

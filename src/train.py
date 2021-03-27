@@ -17,7 +17,6 @@ def train(conf: omegaconf.DictConfig) -> None:
     # data module declaration
     pl_data_module = BasePLDataModule(conf)
 
-
     # main module declaration
     pl_module = BasePLModule(conf, pl_data_module.train_dataset)
 
@@ -36,7 +35,8 @@ def train(conf: omegaconf.DictConfig) -> None:
 
     # trainer
     trainer: Trainer = hydra.utils.instantiate(
-        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=True)
+        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=False
+    )
 
     # module fit
     trainer.fit(pl_module, datamodule=pl_data_module)
