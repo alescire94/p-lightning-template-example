@@ -1,8 +1,9 @@
 from typing import Dict, List
 
+import hydra
 import torch
 from torch.utils.data.dataset import Dataset, T_co
-import hydra
+
 from src.data.Vocab import Vocab
 
 
@@ -47,12 +48,12 @@ class CoNLLDataset(Dataset):
         return self.len_dataset
 
     def build_vocab(
-            self,
-            token_list: List[List[str]],
-            pad_token: str = "<pad>",
-            unk_token: str = "<unk>",
-            freq_to_drop: int = 0,
-            is_label: bool = False,
+        self,
+        token_list: List[List[str]],
+        pad_token: str = "<pad>",
+        unk_token: str = "<unk>",
+        freq_to_drop: int = 0,
+        is_label: bool = False,
     ) -> Vocab:
         """
         build a vocabulary for the roles label vector
@@ -95,8 +96,6 @@ class CoNLLDataset(Dataset):
                 self.ner_labels.append(ner_labels)
 
     def save_vocabs(self):
-        vocabs = {
-            'words': self.vocab_words, 'vocab_pos': self.vocab_pos, 'ner_labels': self.vocab_label_ner
-        }
+        vocabs = {"words": self.vocab_words, "vocab_pos": self.vocab_pos, "ner_labels": self.vocab_label_ner}
 
-        torch.save(vocabs, hydra.utils.to_absolute_path('data/vocabs.pth'))
+        torch.save(vocabs, hydra.utils.to_absolute_path("data/vocabs.pth"))

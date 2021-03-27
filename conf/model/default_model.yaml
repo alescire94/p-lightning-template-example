@@ -1,8 +1,6 @@
 # @package _group_
 
 
-#embeddings:
-#  embedding_dim: 300
 
 sequence_encoder:
   _target_: torch.nn.GRU

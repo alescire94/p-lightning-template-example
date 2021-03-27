@@ -1,0 +1,6 @@
+# @package _group_
+
+
+
+model_checkpoint_path: "data/epoch=0-step=234.ckpt"
+sentence: "Barack Obama is a president"
