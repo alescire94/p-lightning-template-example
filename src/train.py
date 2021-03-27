@@ -17,8 +17,9 @@ def train(conf: omegaconf.DictConfig) -> None:
     # data module declaration
     pl_data_module = BasePLDataModule(conf)
 
+
     # main module declaration
-    pl_module = BasePLModule(conf)
+    pl_module = BasePLModule(conf, pl_data_module.train_dataset)
 
     # callbacks declaration
     callbacks_store = []
@@ -31,12 +32,11 @@ def train(conf: omegaconf.DictConfig) -> None:
         model_checkpoint_callback: ModelCheckpoint = hydra.utils.instantiate(conf.train.early_stopping_callback)
         callbacks_store.append(model_checkpoint_callback)
 
-    gpus = conf.train.gpus if torch.cuda.is_available() else 0
+    gpus = conf.train.pl_trainer.gpus if torch.cuda.is_available() else 0
 
     # trainer
     trainer: Trainer = hydra.utils.instantiate(
-        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=True
-    )
+        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=True)
 
     # module fit
     trainer.fit(pl_module, datamodule=pl_data_module)

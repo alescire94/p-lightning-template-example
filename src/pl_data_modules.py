@@ -54,7 +54,12 @@ class BasePLDataModule(pl.LightningDataModule):
     def __init__(self, conf: DictConfig):
         super().__init__()
         self.conf = conf
-        self.splits = ["train", "validation", "test"]
+        train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
+        self.train_dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
+        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
+        self.val_dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
+        test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
+        self.test_dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
 
     # download dataset and stores it in train, val and test split in csv format.
     def prepare_data(self, *args, **kwargs):
@@ -70,25 +75,29 @@ class BasePLDataModule(pl.LightningDataModule):
         pass
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
-        train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
-        dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
+
         return DataLoader(
-            dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=True
+            self.train_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=True
         )
 
     def val_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
-        dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
+
         return DataLoader(
-            dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=False
+            self.val_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=False
         )
 
     def test_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
-        dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
-        return DataLoader(
-            dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=False
-        )
 
-    def transfer_batch_to_device(self, batch: Any, device: torch.device) -> Any:
-        pass
+        return DataLoader(
+            self.test_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=False
+        )
+    '''
+    def transfer_batch_to_device(self, batch, device):
+        if isinstance(batch, CustomBatch):
+            # move all tensors in your custom data structure to the device
+            batch.samples = batch.samples.to(device)
+            batch.targets = batch.targets.to(device)
+        else:
+            batch = super().transfer_batch_to_device(data, device)
+        return batch
+    '''

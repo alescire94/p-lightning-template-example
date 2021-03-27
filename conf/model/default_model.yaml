@@ -7,3 +7,4 @@ lstm:
   hidden_size: 300
   dropout: 0.2
   num_layers: 300
+  batch_first: True

@@ -6,11 +6,12 @@ from torch import nn
 
 
 class BasePLModule(pl.LightningModule):
-    def __init__(self, conf, *args, **kwargs) -> None:
+    def __init__(self, conf, training_dataset, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters(conf)
         self.conf = conf
-        self.word_embeddings = nn.Embedding(50_000, 300, padding_idx=0)
+
+        self.word_embeddings = nn.Embedding(training_dataset.vocab_words_size, 300, padding_idx=0)
 
         lstm_param = self.conf.model.lstm
         self.lstm = nn.LSTM(
@@ -26,7 +27,7 @@ class BasePLModule(pl.LightningModule):
             if self.conf.model.lstm.bidirectional
             else self.conf.model.lstm.input_size
         )
-        self.linear = nn.Linear(linear_input_size, 11)
+        self.linear = nn.Linear(linear_input_size, training_dataset.vocab_ner_labels_size)
         self.loss = nn.CrossEntropyLoss(ignore_index=0)
 
     def forward(self, feature) -> dict:

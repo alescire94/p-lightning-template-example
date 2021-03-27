@@ -19,8 +19,11 @@ class CoNLLDataset(Dataset):
         self.vocab_label_ner: Vocab = self.build_vocab(self.ner_labels, is_label=True)
         self.padding_size = padding_size
         self.dataset = self.build_dataset()
-        print("LEN VOCAB WORDS", len(self.vocab_words))
-        print("LEN VOCAB vocab", len(self.vocab_label_ner))
+
+        self.vocab_words_size = len(self.vocab_words)
+        self.vocab_pos_size = len(self.vocab_pos)
+        self.vocab_ner_labels_size = len(self.vocab_label_ner)
+
 
     def build_dataset(self) -> List[dict]:
         result = []
@@ -57,8 +60,7 @@ class CoNLLDataset(Dataset):
         vocab = Vocab(pad_token=pad_token, unk_token=unk_token, is_label=is_label)
         for sentence_id in range(self.len_dataset):
             for token in token_list[sentence_id]:
-                if token != pad_token:
-                    vocab.add_token(token)
+                vocab.add_token(token)
         vocab.drop_frequency(freq_to_drop=freq_to_drop)
         return vocab
 
@@ -94,29 +96,3 @@ class CoNLLDataset(Dataset):
                 self.words.append(words)
                 self.pos.append(pos_tags)
                 self.ner_labels.append(ner_labels)
-
-    def process_list_literal(self, literal):
-        literal = self.remove_brackets(literal)
-        literal = self.trim_literal(literal)
-        return literal
-
-    def parse_label_list(self, literal):
-        literal = self.process_list_literal(literal)
-        return self.parse_list(literal)
-
-    def parse_tokens_list(self, literal):
-        literal = self.process_list_literal(literal)
-        return self.parse_tokens(literal)
-
-    def trim_literal(self, literal):
-        return re.sub("\\s+", " ", literal).strip()
-
-    def remove_brackets(self, literal):
-        return literal.replace("[", "").replace("]", "")
-
-    def parse_list(self, list_literal):
-        return [int(label) for label in list_literal.split(" ")]
-
-    def parse_tokens(self, tokens_literal):
-        # slicing is to remove ' ' around tokens
-        return [tok[1:-1] for tok in tokens_literal.split(" ")]
