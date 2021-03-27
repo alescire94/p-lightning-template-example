@@ -68,7 +68,6 @@ class BasePLDataModule(pl.LightningDataModule):
             )
 
     def setup(self, stage: Optional[str] = None):
-        print("SONO DENTRO SETUP")
         train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
         self.train_dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
         val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
@@ -77,10 +76,10 @@ class BasePLDataModule(pl.LightningDataModule):
         self.test_dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
-        return DataLoader(self.train_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=True)
+        return DataLoader(self.train_dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=True)
 
     def val_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        return DataLoader(self.val_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=False)
+        return DataLoader(self.val_dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=False)
 
     def test_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
-        return DataLoader(self.test_dataset, num_workers=1, batch_size=self.conf.data.batch_size, shuffle=False)
+        return DataLoader(self.test_dataset, num_workers=self.conf.data.num_workers, batch_size=self.conf.data.batch_size, shuffle=False)

@@ -13,14 +13,14 @@ class BasePLModule(pl.LightningModule):
         self.save_hyperparameters(conf)
         self.conf = conf
         self.num_labels = vocab_sizes["ner_labels"]
-        lstm_param = self.conf.model.lstm
-        self.word_embeddings = nn.Embedding(vocab_sizes["words"], lstm_param.input_size, padding_idx=0)
-
-        self.lstm = nn.LSTM(**self.conf.model.lstm)
+        self.word_embeddings = nn.Embedding(
+            vocab_sizes["words"], self.conf.model.sequence_encoder.input_size, padding_idx=0
+        )
+        self.sequence_encoder = hydra.utils.instantiate(self.conf.model.sequence_encoder)
         linear_input_size = (
-            self.conf.model.lstm.input_size * 2
-            if self.conf.model.lstm.bidirectional
-            else self.conf.model.lstm.input_size
+            self.conf.model.sequence_encoder.hidden_size * 2
+            if self.conf.model.sequence_encoder.bidirectional
+            else self.conf.model.sequence_encoder.hidden_size
         )
         self.linear = nn.Linear(linear_input_size, self.num_labels)
         self.loss = nn.CrossEntropyLoss(ignore_index=0)
@@ -37,7 +37,7 @@ class BasePLModule(pl.LightningModule):
 
         """
         emb = self.word_embeddings(sample)
-        out_lstm, _ = self.lstm(emb)
+        out_lstm, _ = self.sequence_encoder(emb)
         return self.linear(out_lstm)
 
     def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
@@ -93,5 +93,5 @@ class BasePLModule(pl.LightningModule):
             - None - Fit will run without any optimizer.
         """
         # optimizer = torch.optim.Adam(self.parameters())
-        optimizer: torch.optim.Adam = hydra.utils.instantiate(self.conf.train.optimizer, params=self.parameters())
+        optimizer: torch.optim.Optimizer = hydra.utils.instantiate(self.conf.train.optimizer, params=self.parameters())
         return optimizer

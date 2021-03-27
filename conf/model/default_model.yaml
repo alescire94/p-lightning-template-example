@@ -1,10 +1,14 @@
 # @package _group_
 
-model_feature: 'fantastic_model_feature'
-lstm:
+
+#embeddings:
+#  embedding_dim: 300
+
+sequence_encoder:
+  _target_: torch.nn.GRU
   bidirectional: False
-  input_size: 100
   hidden_size: 100
+  input_size: 300
   dropout: 0.2
   num_layers: 15
   batch_first: True
