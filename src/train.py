@@ -17,6 +17,8 @@ def train(conf: omegaconf.DictConfig) -> None:
     # data module declaration
     pl_data_module = BasePLDataModule(conf)
 
+    pl_data_module.train_dataset.save_vocabs()
+
     vocab_sizes: dict = pl_data_module.train_dataset.get_vocab_sizes()
 
     # main module declaration

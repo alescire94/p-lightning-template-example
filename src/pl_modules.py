@@ -10,7 +10,7 @@ from torch import nn
 class BasePLModule(pl.LightningModule):
     def __init__(self, conf, vocab_sizes, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.save_hyperparameters(conf)
+        self.save_hyperparameters({'conf': conf, 'vocab_sizes': vocab_sizes})
         self.conf = conf
         self.num_labels = vocab_sizes["ner_labels"]
         self.word_embeddings = nn.Embedding(
