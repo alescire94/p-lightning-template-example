@@ -96,7 +96,7 @@ class CoNLLDataset(Dataset):
 
     def save_vocabs(self):
         vocabs = {
-            'words': self.vocab_words, 'vocab_pos': self.vocab_pos, 'ner_labels': self.ner_labels
+            'words': self.vocab_words, 'vocab_pos': self.vocab_pos, 'ner_labels': self.vocab_label_ner
         }
 
         torch.save(vocabs, hydra.utils.to_absolute_path('data/vocabs.pth'))
