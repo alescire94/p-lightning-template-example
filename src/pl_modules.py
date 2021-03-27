@@ -1,20 +1,20 @@
 from typing import Any
 
+import hydra
 import pytorch_lightning as pl
-from pytorch_lightning.metrics.functional import f1 as f1_score
-
 import torch
+from pytorch_lightning.metrics.functional import f1 as f1_score
 from torch import nn
 
 
 class BasePLModule(pl.LightningModule):
-    def __init__(self, conf, training_dataset, *args, **kwargs) -> None:
+    def __init__(self, conf, vocab_sizes, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters(conf)
         self.conf = conf
-        self.num_labels = training_dataset.vocab_ner_labels_size
+        self.num_labels = vocab_sizes["ner_labels"]
         lstm_param = self.conf.model.lstm
-        self.word_embeddings = nn.Embedding(training_dataset.vocab_words_size, lstm_param.input_size, padding_idx=0)
+        self.word_embeddings = nn.Embedding(vocab_sizes["words"], lstm_param.input_size, padding_idx=0)
 
         self.lstm = nn.LSTM(**self.conf.model.lstm)
         linear_input_size = (
@@ -22,9 +22,10 @@ class BasePLModule(pl.LightningModule):
             if self.conf.model.lstm.bidirectional
             else self.conf.model.lstm.input_size
         )
-        self.linear = nn.Linear(linear_input_size, training_dataset.vocab_ner_labels_size)
+        self.linear = nn.Linear(linear_input_size, self.num_labels)
         self.loss = nn.CrossEntropyLoss(ignore_index=0)
         self.softmax = nn.Softmax(dim=-1)
+
     def forward(self, sample) -> dict:
         """
         Method for the forward pass.
@@ -67,7 +68,7 @@ class BasePLModule(pl.LightningModule):
     def _evaluate(self, logits, labels):
         pred = self.softmax(logits)
         pred = torch.argmax(pred, dim=-1)
-        mask = (labels != 0)
+        mask = labels != 0
         pred_no_pad, labels_no_pad = pred[mask], labels[mask]
         f1 = f1_score(pred_no_pad, labels_no_pad, num_classes=self.num_labels)
         loss = self.loss(logits.view(-1, logits.shape[-1]), labels.view(-1))
@@ -91,6 +92,6 @@ class BasePLModule(pl.LightningModule):
             - Tuple of dictionaries as described, with an optional 'frequency' key.
             - None - Fit will run without any optimizer.
         """
-        optimizer = torch.optim.Adam(self.parameters())
-        # optimizer: torch.optim.Adam = hydra.utils.instantiate(self.conf.train.optimizer, params=self.parameters())
+        # optimizer = torch.optim.Adam(self.parameters())
+        optimizer: torch.optim.Adam = hydra.utils.instantiate(self.conf.train.optimizer, params=self.parameters())
         return optimizer

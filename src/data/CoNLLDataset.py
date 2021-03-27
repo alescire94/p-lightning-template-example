@@ -1,5 +1,4 @@
-import re
-from typing import List
+from typing import Dict, List
 
 import torch
 from torch.utils.data.dataset import Dataset, T_co
@@ -20,9 +19,11 @@ class CoNLLDataset(Dataset):
         self.padding_size = padding_size
         self.dataset = self.build_dataset()
 
-        self.vocab_words_size = len(self.vocab_words)
-        self.vocab_pos_size = len(self.vocab_pos)
-        self.vocab_ner_labels_size = len(self.vocab_label_ner)
+    def get_vocab_sizes(self) -> Dict[str, int]:
+        vocab_words_size = len(self.vocab_words)
+        vocab_pos_size = len(self.vocab_pos)
+        vocab_ner_labels_size = len(self.vocab_label_ner)
+        return {"words": vocab_words_size, "pos": vocab_pos_size, "ner_labels": vocab_ner_labels_size}
 
     def build_dataset(self) -> List[dict]:
         result = []

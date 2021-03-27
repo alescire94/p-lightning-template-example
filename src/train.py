@@ -17,10 +17,10 @@ def train(conf: omegaconf.DictConfig) -> None:
     # data module declaration
     pl_data_module = BasePLDataModule(conf)
 
-    dataset_train =  pl_data_module.train_dataset
+    vocab_sizes: dict = pl_data_module.train_dataset.get_vocab_sizes()
 
     # main module declaration
-    pl_module = BasePLModule(conf, dataset_train)
+    pl_module = BasePLModule(conf, vocab_sizes)
 
     # callbacks declaration
     callbacks_store = []

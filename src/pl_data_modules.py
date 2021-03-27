@@ -57,12 +57,15 @@ class BasePLDataModule(pl.LightningDataModule):
         self.prepare_data()
         self.setup()
 
-
     # download dataset and stores it in train, val and test split in csv format.
     def prepare_data(self, *args, **kwargs):
         abs_path = hydra.utils.to_absolute_path("data/")
-        if not os.path.exists(os.path.join(abs_path, 'train.txt')):
-            os.system("wget https://data.deepai.org/conll2003.zip -P {} && unzip {}/conll2003.zip -d {} && rm {}/conll2003.zip".format(abs_path, abs_path, abs_path, abs_path))
+        if not os.path.exists(os.path.join(abs_path, "train.txt")):
+            os.system(
+                "wget https://data.deepai.org/conll2003.zip -P {} && unzip {}/conll2003.zip -d {} && rm {}/conll2003.zip".format(
+                    abs_path, abs_path, abs_path, abs_path
+                )
+            )
 
     def setup(self, stage: Optional[str] = None):
         print("SONO DENTRO SETUP")
