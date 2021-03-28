@@ -46,7 +46,7 @@ python3 src/scripts/evaluate.py
 5.a By default the evaluation script takes as input the sentence specified in conf/evaluate/default.evaluate.yaml 
 To change it you can modify the file or by command line, as usual for all pytorch lightning parameters.
 ```
-PYTHONPATH=. python3 src/scripts/evaluate.py -m evaluate.sentence="I am from Rome"
+python3 src/scripts/evaluate.py -m evaluate.sentence="I am from Rome"
 ```
 
 
