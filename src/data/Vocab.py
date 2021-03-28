@@ -2,6 +2,10 @@ from typing import Dict, List
 
 
 class Vocab:
+    '''
+    This class allows you to build vocabulary to be used for encoding tokens, such as labels and words.
+    The encoding is a function from str -> int and decoding is the inverse of it.
+    '''
     def __init__(self, unk_token: str = "<unk>", pad_token: str = "<pad>", is_label: bool = False):
         self._token_to_id: Dict[str, int] = {}
         self._id_to_token: Dict[int, List[str, int]] = {}  # id: (words, occ)
@@ -18,7 +22,7 @@ class Vocab:
     def __contains__(self, token: str) -> bool:
         return token in self._token_to_id
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._id_to_token)
 
     def add_token(self, token) -> int:
@@ -37,7 +41,11 @@ class Vocab:
     def token_to_id(self, token) -> int:
         return self._token_to_id[token]
 
-    def drop_frequency(self, freq_to_drop: int):
+    def drop_frequency(self, freq_to_drop: int) -> None:
+        '''
+        This function take a integer and drop all entry in the vocabulary with a certain occurence threshold imposed.
+        Allowing the model to train with OOVs.
+        '''
         self._id_to_token = {
             k: v for k, v in self._id_to_token.items() if v[1] > freq_to_drop or v in self._special_tokens
         }

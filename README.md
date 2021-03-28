@@ -1,5 +1,5 @@
 <h1 align="center">
-  PyTorch Lightning Template
+  PyTorch Lightning Template <br> CoNLL 2003 <br> Named Entity Recognition
 </h1>
 
 <p align="center">
@@ -49,7 +49,14 @@ components:
 In order to set up the python interpreter we utilize [conda](https://docs.conda.io/projects/conda/en/latest/index.html)
 , the script `setup.sh` creates a conda environment and install pytorch
 and the dependencies in "requirements.txt".
+### Dependencies
+1. Conda
+2. Linux or MacOS are recommended
+3. unzip tool, check it executing ```which unzip```
 
+## Dataset
+The dataset used in the example is the Named Entity Recognition (NER) from the competition CoNLL 2003.<br>
+The dataset is automatically downloaded from the pl_data_modules class and ready to be use.
 
 ## Using the repository
 To use this repository as a starting template for your projects, you can just click the green button "Use this template" at the top of this page. More on using GitHub repositories on the following [link](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template#creating-a-repository-from-a-template).
