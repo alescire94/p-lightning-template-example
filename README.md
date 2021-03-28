@@ -25,20 +25,25 @@ The dataset is automatically downloaded from the pl_data_modules class and ready
 ```
 git clone https://github.com/alescire94/p-lightning-template-example ner_conll03 && cd ner_conll03
 ```
-2. Install all python3 dependencies, answering to setup.sh questions
+2. Install all python3 dependencies, answering to setup.sh questions.<br>
 The installer supports cuda for the GPU usage.
 ```
 bash setup.sh
 ```
-3. Execute the train script
+3. IMPORTANT! Set the PYTHONPATH variable before each use
+<br> N.B.: ensure to be in the ner_conll03 root folder.
 ```
-PYTHONPATH=. python3 src/train.py
+export PYTHONPATH=.
 ```
-4. Test it
+4. Execute the train script
 ```
-PYTHONPATH=. python3 src/scripts/evaluate.py 
+python3 src/train.py
 ```
-4.a By default the evaluation script takes as input the sentence specified in conf/evaluate/default.evaluate.yaml 
+5. Test it
+```
+python3 src/scripts/evaluate.py 
+```
+5.a By default the evaluation script takes as input the sentence specified in conf/evaluate/default.evaluate.yaml 
 To change it you can modify the file or by command line, as usual for all pytorch lightning parameters.
 ```
 PYTHONPATH=. python3 src/scripts/evaluate.py -m evaluate.sentence="I am from Rome"
