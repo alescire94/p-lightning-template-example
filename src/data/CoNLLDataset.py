@@ -73,7 +73,7 @@ class CoNLLDataset(Dataset):
             result.extend(padding)
         return torch.LongTensor(result)
 
-    def parse_dataset(self, dataset_path):
+    def parse_dataset(self, dataset_path: str) -> None:
         with open(dataset_path) as f:
             next(f)
             next(f)
@@ -95,7 +95,7 @@ class CoNLLDataset(Dataset):
                 self.pos.append(pos_tags)
                 self.ner_labels.append(ner_labels)
 
-    def save_vocabs(self):
+    def save_vocabs(self) -> None:
         vocabs = {"words": self.vocab_words, "vocab_pos": self.vocab_pos, "ner_labels": self.vocab_label_ner}
 
         torch.save(vocabs, hydra.utils.to_absolute_path("data/vocabs.pth"))

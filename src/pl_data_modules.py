@@ -1,5 +1,5 @@
 import os
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 import hydra
 import pytorch_lightning as pl
@@ -57,8 +57,8 @@ class BasePLDataModule(pl.LightningDataModule):
         self.prepare_data()
         self.setup()
 
-    # download dataset and stores it in train, val and test split in csv format.
     def prepare_data(self, *args, **kwargs):
+        # download dataset and stores it.
         abs_path = hydra.utils.to_absolute_path("data/")
         if not os.path.exists(os.path.join(abs_path, "train.txt")):
             os.system(

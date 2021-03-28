@@ -1,5 +1,5 @@
 <h1 align="center">
-  PyTorch Lightning Template <br> CoNLL 2003 <br> Named Entity Recognition
+  PyTorch Lightning Template Example <br> CoNLL 2003 <br> Named Entity Recognition
 </h1>
 
 <p align="center">
@@ -8,58 +8,41 @@
   <a href="https://hydra.cc/"><img alt="Config: hydra" src="https://img.shields.io/badge/config-hydra-blue?style=for-the-badge"></a>
   <a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge"></a>
 </p>
+This repository contains an example based on the pytorch lightning bootstrap template from the <a href="https://github.com/edobobo/p-lightning-template">p-lightning-template</a> repository.
+<br> We provide a minimalistic example of py-lighing module to address the NER task from CoNLL 2003.
 
-<h3 align="center">
-  A simple template to bootstrap your PyTorch Lightning project
-</h3>
-
-This is a template to initialize [PyTorch](https://pytorch.org) projects that use as a backbone
-framework [PyTorch Lightning](https://www.pytorchlightning.ai). The project 
-is very simple and minimalistic and serves as a bootstrap in order to avoid rewriting the same
-boilerplate code every time a new project is created. Finally, in order to organize the configuration files 
-and all the hyperparameters we utilize [Hydra](https://hydra.cc), a framework from 
-Facebook Research built for "*elegantly configuring complex applications*".
-
-## Repository Structure
-```
-p-lightning-template
-| conf  # contains Hydra config files
-  | data
-  | model
-  | train
-  root.yaml  # hydra root config file
-| data  # datasets should go here
-| experiments  # where the models are stored
-| src
-  | pl_data_modules.py  # base LightinigDataModule
-  | pl_modules.py  # base LightningModule
-  | train.py  # main script for training the network
-| README.md
-| requirements.txt
-| setup.sh # environment setup script 
-```
-The structure of the repository is very simplistic and involves mainly four
-components:
-- **pl_data_modules.py** where you can declare your LightningDataModules.
-- **pl_modules.py** where you can declare your LightningModules.
-- **train.py** the main script to start the training phase.
-- **conf** the directory containing the config files of Hydra.
-
-## Initializing the environment
-In order to set up the python interpreter we utilize [conda](https://docs.conda.io/projects/conda/en/latest/index.html)
-, the script `setup.sh` creates a conda environment and install pytorch
-and the dependencies in "requirements.txt".
 ### Dependencies
 1. Conda
 2. Linux or MacOS are recommended
 3. unzip tool, check it executing ```which unzip```
-
+4. git
 ## Dataset
-The dataset used in the example is the Named Entity Recognition (NER) from the competition CoNLL 2003.<br>
+The dataset used in the project is the Named Entity Recognition (NER) from the competition CoNLL 2003.<br>
 The dataset is automatically downloaded from the pl_data_modules class and ready to be use.
 
 ## Using the repository
-To use this repository as a starting template for your projects, you can just click the green button "Use this template" at the top of this page. More on using GitHub repositories on the following [link](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template#creating-a-repository-from-a-template).
+1. Clone the repository
+```
+git clone https://github.com/alescire94/p-lightning-template-example ner_conll03 && cd ner_conll03
+```
+2. Install all python3 dependencies, answering to setup.sh questions
+The installer supports cuda for the GPU usage.
+```
+bash setup.sh
+```
+3. Execute the train script
+```
+PYTHONPATH=. python3 src/train.py
+```
+4. Test it
+```
+PYTHONPATH=. python3 src/scripts/evaluate.py 
+```
+4.a By default the evaluation script takes as input the sentence specified in conf/evaluate/default.evaluate.yaml 
+To change it you can modify the file or by command line, as usual for all pytorch lightning parameters.
+```
+PYTHONPATH=. python3 src/scripts/evaluate.py -m evaluate.sentence="I am from Rome"
+```
 
 
 ## FAQ
@@ -80,24 +63,10 @@ new working dir.
 2. Hydra will provide you with a reference to the original working directory in your config files.
 You can access it under the name of 'hydra:runtime.cwd'. So, for example, if your training dataset
 has the relative path 'data/train.tsv' you can convert it to a full path by prepending the hydra 
-variable before 
-
-
-## Other useful repositories
-This repository has been created with the idea of providing a simple skeleton from which you can 
-start a PyTorch Lightning project. Instead of favoring the customizability, we favored the simplicity
-and we intended this template as a base for building more specific templates based on the user needs
-(for example by forking this one). However, there are several other repositories with different 
-features that you can check if interested. We will list two of them here:
-- [lucmos/nn-template](https://github.com/lucmos/nn-template): a very nice template with support for
-    DVC.
-- [hobogalaxy/lightning-hydra-template](https://github.com/hobogalaxy/lightning-hydra-template):
-    another useful and very well documented template repository.
-
-As we were mentioning earlier we created this repository even with the intention of bootstrapping
-other Lightning templates. We mention here these repositories:
-- [poccio/grid-seq2seq](https://github.com/poccio/grid-seq2seq): This is a NLP oriented repository 
-  that serves as a skeleton for Seq2Seq projects, while at the same time offering a way of running 
-  Bart based Seq2Seq models without writing a single line of code!
-it in the yaml files by doing that following: '${hydra:runtime.cwd}/data/train.tsv'.
-  
+variable before
+   
+# Authors
+Alphabetic order equal contribution
+* **Andrea Bacciu**  - [github](https://github.com/andreabac3)
+* **Edoardo Barba**  - [github](https://github.com/edobobo)
+* **Alessandro Scirè**  - [github](https://github.com/alescire94)

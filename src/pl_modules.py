@@ -8,12 +8,13 @@ from torch import nn
 
 
 class BasePLModule(pl.LightningModule):
-    '''
+    """
     The neural network shown is composed by 3 parts:
     1) Word embeddings
     2) Sequence encoder (LSTM/GRU)
     3) Linear layer
-    '''
+    """
+
     def __init__(self, conf, vocab_sizes, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.save_hyperparameters({"conf": conf, "vocab_sizes": vocab_sizes})
@@ -74,7 +75,7 @@ class BasePLModule(pl.LightningModule):
         pred = torch.argmax(pred, dim=-1)
         mask = labels != 0
         pred_no_pad, labels_no_pad = pred[mask], labels[mask]
-        f1 = f1_score(pred_no_pad, labels_no_pad, num_classes=self.num_labels, average='macro')
+        f1 = f1_score(pred_no_pad, labels_no_pad, num_classes=self.num_labels, average="macro")
         loss = self.loss(logits.view(-1, logits.shape[-1]), labels.view(-1))
         return loss, f1
 
