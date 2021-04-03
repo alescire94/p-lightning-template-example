@@ -39,7 +39,7 @@ def train(conf: omegaconf.DictConfig) -> None:
 
     # trainer
     trainer: Trainer = hydra.utils.instantiate(
-        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=False
+        conf.train.pl_trainer, callbacks=callbacks_store, gpus=gpus, fast_dev_run=True
     )
 
     # module fit
