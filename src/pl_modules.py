@@ -29,6 +29,7 @@ class BasePLModule(pl.LightningModule):
             if self.conf.model.sequence_encoder.bidirectional
             else self.conf.model.sequence_encoder.hidden_size
         )
+        self.dropout = nn.Dropout(self.conf.model.sequence_encoder.dropout)
         self.linear = nn.Linear(linear_input_size, self.num_labels)
         self.loss = nn.CrossEntropyLoss(ignore_index=0)
         self.softmax = nn.Softmax(dim=-1)
@@ -43,7 +44,7 @@ class BasePLModule(pl.LightningModule):
             output_dict: forward output containing the predictions (output logits ecc...) and the loss if any.
 
         """
-        emb = self.word_embeddings(sample)
+        emb = self.dropout(self.word_embeddings(sample))
         out_lstm, _ = self.sequence_encoder(emb)
         return self.linear(out_lstm)
 

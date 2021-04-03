@@ -3,10 +3,10 @@
 
 
 sequence_encoder:
-  _target_: torch.nn.GRU
-  bidirectional: False
-  hidden_size: 100
+  _target_: torch.nn.LSTM
+  bidirectional: True
+  hidden_size: 300
   input_size: 300
   dropout: 0.2
-  num_layers: 15
+  num_layers: 2
   batch_first: True

@@ -6,7 +6,7 @@
 train_path: 'data/train.txt'
 validation_path: 'data/valid.txt'
 test_path: 'data/test.txt'
-padding_size: 150
+padding_size: 200
 
-batch_size: 16
+batch_size: 32
 num_workers: 1

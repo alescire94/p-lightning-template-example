@@ -19,27 +19,24 @@ pl_trainer:
   # amp_level: O2
 
 optimizer:
-  _target_: torch.optim.AdamW
+  _target_: torch.optim.Adam
   lr: 1e-3
-  eps: 1e-8
-  weight_decay: 0
-  amsgrad: False
 
 
 # early stopping callback
 # "early_stopping_callback: null" will disable early stopping
 early_stopping_callback:
   _target_: pytorch_lightning.callbacks.EarlyStopping
-  monitor: val_loss
-  mode: min
+  monitor: val_f1
+  mode: max
   patience: 50
 
 # model_checkpoint_callback
 # "model_checkpoint_callback: null" will disable model checkpointing
 model_checkpoint_callback:
   _target_: pytorch_lightning.callbacks.ModelCheckpoint
-  monitor: val_loss
-  mode: min
+  monitor: val_f1
+  mode: max
   verbose: True
   save_top_k: 5
   dirpath: experiments/${train.model_name}
