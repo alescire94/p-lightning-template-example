@@ -12,8 +12,9 @@ pl_trainer:
   gpus: 1
   accumulate_grad_batches: 4
   gradient_clip_val: 10.0
+  max_epochs: 5
   val_check_interval: 1.0  # you can specify an int "n" here => validation every "n" steps
-  max_steps: 100_000
+  #max_steps: 100_000
   # uncomment the lines below for training with mixed precision
   # precision: 16
   # amp_level: O2

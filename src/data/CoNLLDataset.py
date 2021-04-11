@@ -8,15 +8,15 @@ from src.data.Vocab import Vocab
 
 
 class CoNLLDataset(Dataset):
-    def __init__(self, padding_size: int, dataset_path: str):
+    def __init__(self,padding_size: int, dataset_path: str, vocabs:dict=None):
         self.words: List[List[str]] = []
         self.pos: List[List[str]] = []
         self.ner_labels: List[List[str]] = []
         self.parse_dataset(dataset_path)
         self.len_dataset: int = len(self.words)
-        self.vocab_words: Vocab = self.build_vocab(self.words)
-        self.vocab_pos: Vocab = self.build_vocab(self.pos)
-        self.vocab_label_ner: Vocab = self.build_vocab(self.ner_labels, is_label=True)
+        self.vocab_words: Vocab = self.build_vocab(self.words) if vocabs is None else vocabs["words"]
+        self.vocab_pos: Vocab = self.build_vocab(self.pos) if vocabs is None else vocabs["vocab_pos"]
+        self.vocab_label_ner: Vocab = self.build_vocab(self.ner_labels, is_label=True) if vocabs is None else vocabs["ner_labels"]
         self.padding_size = padding_size
         self.dataset = self.build_dataset()
 
@@ -96,6 +96,8 @@ class CoNLLDataset(Dataset):
                 self.ner_labels.append(ner_labels)
 
     def save_vocabs(self) -> None:
-        vocabs = {"words": self.vocab_words, "vocab_pos": self.vocab_pos, "ner_labels": self.vocab_label_ner}
-
+        vocabs = self.get_vocabs()
         torch.save(vocabs, hydra.utils.to_absolute_path("data/vocabs.pth"))
+
+    def get_vocabs(self) -> dict:
+        return {"words": self.vocab_words, "vocab_pos": self.vocab_pos, "ner_labels": self.vocab_label_ner}

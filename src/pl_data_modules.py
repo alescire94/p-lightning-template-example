@@ -70,10 +70,11 @@ class BasePLDataModule(pl.LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         train_path = hydra.utils.to_absolute_path(self.conf.data.train_path)
         self.train_dataset = CoNLLDataset(self.conf.data.padding_size, train_path)
+        vocabs = self.train_dataset.get_vocabs()
         val_path = hydra.utils.to_absolute_path(self.conf.data.validation_path)
-        self.val_dataset = CoNLLDataset(self.conf.data.padding_size, val_path)
+        self.val_dataset = CoNLLDataset(self.conf.data.padding_size, val_path, vocabs)
         test_path = hydra.utils.to_absolute_path(self.conf.data.test_path)
-        self.test_dataset = CoNLLDataset(self.conf.data.padding_size, test_path)
+        self.test_dataset = CoNLLDataset(self.conf.data.padding_size, test_path, vocabs)
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
         return DataLoader(
